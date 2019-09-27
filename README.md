@@ -5,9 +5,9 @@
   action-pact
 </h1>
 
-<div align="center">
+<p align="center">
   GitHub actions workflow and action validator
-</div>
+</p>
 
 <div align="center">
   <a href="https://github.com/softprops/action-pact/actions">
