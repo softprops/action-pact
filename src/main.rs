@@ -1,3 +1,4 @@
+//! A tool for making sure your GithubActions configuration files are in in order
 use jsonschema_valid::validate;
 use lazy_static::lazy_static;
 use serde_json::Value;
@@ -41,5 +42,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_valid_01() {}
+    fn test_valid_01() {
+        assert!(run(Opts {
+            path: "../tests/data/valid_01.yml".into()
+        })
+        .is_ok())
+    }
 }
