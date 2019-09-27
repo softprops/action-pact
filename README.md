@@ -1,5 +1,5 @@
 <div align="center">
-  🎬
+  :octocat: 🎬
 </div>
 <h1 align="center">
   action-pact
