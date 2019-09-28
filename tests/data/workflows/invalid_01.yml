@@ -1,5 +1,5 @@
-on: [push]
-jobs:
+onn: [push]
+jobz:
   test:
     runs-on: ubuntu-latest
     steps:
