@@ -19,7 +19,7 @@ fn run(opts: Opts) -> Result<(), Box<dyn Error>> {
     let Opts { path } = opts;
     println!("validating {}", path.display());
     let result = validate(
-        &serde_json::from_reader(File::open(path)?)?,
+        &serde_yaml::from_reader(File::open(path)?)?,
         &WORKFLOW_SCHEMA,
         None,
         true,
@@ -42,10 +42,24 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_valid_01() {
+    fn workflow_schema_is_valid_yaml() {
+        let _ = &WORKFLOW_SCHEMA;
+    }
+
+    #[test]
+    fn fails_with_missing_path() {
         assert!(run(Opts {
-            path: "../tests/data/valid_01.yml".into()
+            path: "tests/data/foobar".into()
         })
-        .is_ok())
+        .is_err())
+    }
+
+    #[test]
+    fn test_valid_01() {
+        let result = run(Opts {
+            path: "tests/data/valid_01.yml".into(),
+        });
+        println!("{:?}", result);
+        assert!(result.is_ok())
     }
 }
