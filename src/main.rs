@@ -62,11 +62,18 @@ mod tests {
     }
 
     #[test]
-    fn test_valid_01() {
+    fn test_workflows_valid_01() {
         let result = run(Opts {
             path: "tests/data/workflows/valid_01.yml".into(),
         });
-        println!("{:?}", result);
+        assert!(result.is_ok())
+    }
+
+    #[test]
+    fn test_actions_valid_01() {
+        let result = run(Opts {
+            path: "tests/data/actions/valid_01.yml".into(),
+        });
         assert!(result.is_ok())
     }
 }
