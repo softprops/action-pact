@@ -1,0 +1,82 @@
+{
+  "title": "GithHb action metadata file - https://help.github.com/en/articles/metadata-syntax-for-github-actions",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "name",
+    "description"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of your action. GitHub displays the name in the Actions tab to help visually identify actions in each job."
+    },
+    "author": {
+      "type": "string",
+      "description": "The name of the action's author."
+    },
+    "description": {
+      "type": "string",
+      "description": " A short description of the action."
+    },
+    "inputs": {
+      "type": "object",
+      "description": "Input parameters allow you to specify data that the action expects to use during runtime. GitHub stores input parameters as environment variables. Input ids with uppercase letters are converted to lowercase during runtime. We recommended using lowercase input ids.",
+      "addditionalProperties": {
+        "type": "object",
+        "required": ["description", "required"],
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "A string description of the input parameter."
+          },
+          "required": {
+            "type": "boolean",
+            "description": "A boolean to indicate whether the action requires the input parameter. Set to true when the parameter is required."
+          },
+          "default": {
+            "type": "boolean",
+            "description": "A string representing the default value. The default value is used when an input parameter isn't specified in a workflow file."
+          }
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "description": "Output parameters allow you to specify the data that subsequent actions can use later in the workflow after the action that defines these outputs has run. For example, if you had an action that performed the addition of two inputs (x + y = z), the action could output the sum (z) for other actions to use as an input. Output ids with uppercase letters are converted to lowercase during runtime. We recommended using lowercase output ids.",
+      "addditionalProperties": {
+        "type": "object",
+        "required": ["description"],
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "A string description of the output parameter."
+          }
+        }
+      }
+    },
+    "runs": {
+      "type": "object",
+      "description": "The command to run when the action executes.",
+      "properties": {
+        "using": {
+          "type":"string",
+          "description": "The application to use to execute the code specified in main.",
+          "enum": ["node12", "docker"]
+        },
+        "main": {
+          "type": "string",
+          "description": "Required for JavaScript actions The code file that contains your action code. The application specified with the using syntax will execute this file."
+        },
+        "image": {
+          "type": "string",
+          "description":"Required for container actions The Docker image to use as the container to run the action. The value can be the Docker base image name, a local Dockerfile in your repository, a public docker Hub or registry. To reference a Dockerfile local to your repository, use a path relative to the root of the repository. The application specified with the using syntax will execute this file."
+        },
+        "entrypoint": {
+          "type": "string",
+          "description": "Optional for container actions Overrides the Docker ENTRYPOINT in the Dockerfile, or sets it if one wasn't already specified. If an action does not use the runs keyword, the commands in entrypoint will execute. The Docker ENTRYPOINT instruction has a shell form and exec form. The Docker ENTRYPOINT documentation recommends using the exec form of the ENTRYPOINT instruction."
+        }
+      }
+    }
+  }
+}

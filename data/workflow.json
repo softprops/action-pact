@@ -1,5 +1,5 @@
 {
-  "title": "Github workflow file - https://help.github.com/en/articles/workflow-syntax-for-github-actions",
+  "title": "GitHub workflow file - https://help.github.com/en/articles/workflow-syntax-for-github-actions",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "required": [

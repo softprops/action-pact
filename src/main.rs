@@ -8,6 +8,8 @@ use structopt::StructOpt;
 lazy_static! {
     static ref WORKFLOW_SCHEMA: Value = serde_json::from_str(include_str!("../data/workflow.json"))
         .expect("invalid workflow schema");
+    static ref ACTION_SCHEMA: Value =
+        serde_json::from_str(include_str!("../data/action.json")).expect("invalid action schema");
 }
 
 #[derive(StructOpt)]
@@ -47,6 +49,11 @@ mod tests {
     }
 
     #[test]
+    fn action_schema_is_valid_yaml() {
+        let _ = &ACTION_SCHEMA;
+    }
+
+    #[test]
     fn fails_with_missing_path() {
         assert!(run(Opts {
             path: "tests/data/foobar".into()
@@ -57,7 +64,7 @@ mod tests {
     #[test]
     fn test_valid_01() {
         let result = run(Opts {
-            path: "tests/data/valid_01.yml".into(),
+            path: "tests/data/workflows/valid_01.yml".into(),
         });
         println!("{:?}", result);
         assert!(result.is_ok())
