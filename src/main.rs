@@ -29,9 +29,10 @@ fn run(opts: Opts) -> Result<(), Box<dyn StdError>> {
         true,
     );
     if !result.get_errors().is_empty() {
-        Err(Error::Validation(result))?
+        Err(Error::Validation(result).into())
+    } else {
+        Ok(())
     }
-    Ok(())
 }
 
 fn main() {
