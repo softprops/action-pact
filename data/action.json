@@ -4,7 +4,8 @@
   "type": "object",
   "required": [
     "name",
-    "description"
+    "description",
+    "runs"
   ],
   "properties": {
     "name": {
@@ -63,6 +64,7 @@
     "runs": {
       "type": "object",
       "description": "The command to run when the action executes.",
+      "required": ["using"],
       "properties": {
         "using": {
           "type": "string",
