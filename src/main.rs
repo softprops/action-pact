@@ -2,7 +2,7 @@
 use jsonschema_valid::validate;
 use lazy_static::lazy_static;
 use serde_json::Value;
-use std::{error::Error as StdError, fs::File, path::PathBuf, process::exit};
+use std::{error::Error as StdError, fs, path::PathBuf, process::exit};
 use structopt::StructOpt;
 mod error;
 use error::Error;
@@ -22,14 +22,16 @@ struct Opts {
 fn run(opts: Opts) -> Result<(), Box<dyn StdError>> {
     let Opts { path } = opts;
     println!("validating {}", path.display());
-    let result = validate(
-        &serde_yaml::from_reader(File::open(path)?)?,
-        &WORKFLOW_SCHEMA,
-        None,
-        true,
-    );
+    let schema: &Value = if path.file_name().iter().any(|name| "action.yml" == *name) {
+        &ACTION_SCHEMA
+    } else {
+        &WORKFLOW_SCHEMA
+    };
+    let contents = fs::read_to_string(path)?;
+    let positions = lincolns::from_str(&contents)?;
+    let result = validate(&serde_yaml::from_str(&contents)?, schema, None, true);
     if !result.get_errors().is_empty() {
-        Err(Error::Validation(result).into())
+        Err(Error::Validation(positions, result).into())
     } else {
         Ok(())
     }
@@ -69,6 +71,7 @@ mod tests {
         let result = run(Opts {
             path: "tests/data/workflows/valid_01.yml".into(),
         });
+
         assert!(result.is_ok())
     }
 
@@ -83,7 +86,7 @@ mod tests {
     #[test]
     fn test_actions_valid_01() {
         let result = run(Opts {
-            path: "tests/data/actions/valid_01.yml".into(),
+            path: "tests/data/actions/valid/action.yml".into(),
         });
         assert!(result.is_ok())
     }
