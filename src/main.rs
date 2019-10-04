@@ -62,7 +62,7 @@ mod tests {
     #[test]
     fn fails_with_missing_path() {
         assert!(run(Opts {
-            path: "tests/data/foobar".into()
+            path: vec!["tests/data/foobar".into()]
         })
         .is_err())
     }
@@ -70,7 +70,7 @@ mod tests {
     #[test]
     fn test_workflows_valid_01() {
         let result = run(Opts {
-            path: "tests/data/workflows/valid_01.yml".into(),
+            path: vec!["tests/data/workflows/valid_01.yml".into()],
         });
         assert!(result.is_ok())
     }
@@ -78,7 +78,7 @@ mod tests {
     #[test]
     fn test_workflows_invalid_01() {
         let result = run(Opts {
-            path: "tests/data/workflows/invalid_01.yml".into(),
+            path: vec!["tests/data/workflows/invalid_01.yml".into()],
         });
         assert!(result.is_err())
     }
@@ -86,7 +86,7 @@ mod tests {
     #[test]
     fn test_actions_valid_01() {
         let result = run(Opts {
-            path: "tests/data/actions/valid/action.yml".into(),
+            path: vec!["tests/data/actions/valid/action.yml".into()],
         });
         assert!(result.is_ok())
     }
