@@ -51,8 +51,6 @@ impl fmt::Display for Error {
                     ) {
                         write!(f, "{}", src)?;
                     }
-
-                    write!(f, "{}", err)?;
                 }
             }
         }
