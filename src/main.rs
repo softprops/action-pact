@@ -6,6 +6,7 @@ use std::{error::Error as StdError, fs, path::PathBuf, process::exit};
 use structopt::StructOpt;
 mod error;
 use error::Error;
+use std::path::Path;
 
 lazy_static! {
     static ref WORKFLOW_SCHEMA: Value = serde_json::from_str(include_str!("../data/workflow.json"))
@@ -19,18 +20,34 @@ struct Opts {
     path: Vec<PathBuf>,
 }
 
+fn select_schema<P>(path: P) -> &'static Value
+where
+    P: AsRef<Path>,
+{
+    if path
+        .as_ref()
+        .file_name()
+        .iter()
+        .any(|name| "action.yml" == *name)
+    {
+        &ACTION_SCHEMA
+    } else {
+        &WORKFLOW_SCHEMA
+    }
+}
+
 fn run(opts: Opts) -> Result<(), Box<dyn StdError>> {
     let Opts { path } = opts;
     for p in path {
         println!("validating {}", p.display());
-        let schema: &Value = if p.file_name().iter().any(|name| "action.yml" == *name) {
-            &ACTION_SCHEMA
-        } else {
-            &WORKFLOW_SCHEMA
-        };
         let contents = fs::read_to_string(&p)?;
         let positions = lincolns::from_str(&contents)?;
-        let result = validate(&serde_yaml::from_str(&contents)?, schema, None, false);
+        let result = validate(
+            &serde_yaml::from_str(&contents)?,
+            select_schema(&p),
+            None,
+            false,
+        );
         if !result.get_errors().is_empty() {
             return Err(Error::Validation(p, positions, result).into());
         }
@@ -48,6 +65,18 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn select_schema_selects_action() {
+        let deref: &Value = &ACTION_SCHEMA;
+        assert!(select_schema("action.yml") == deref)
+    }
+
+    #[test]
+    fn select_schema_selects_workflow() {
+        let deref: &Value = &WORKFLOW_SCHEMA;
+        assert!(select_schema("not-action.yml") == deref)
+    }
 
     #[test]
     fn workflow_schema_is_valid_yaml() {
