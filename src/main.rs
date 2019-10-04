@@ -2,8 +2,10 @@
 use jsonschema_valid::validate;
 use lazy_static::lazy_static;
 use serde_json::Value;
-use std::{error::Error, fs::File, path::PathBuf, process::exit};
+use std::{error::Error as StdError, fs::File, path::PathBuf, process::exit};
 use structopt::StructOpt;
+mod error;
+use error::Error;
 
 lazy_static! {
     static ref WORKFLOW_SCHEMA: Value = serde_json::from_str(include_str!("../data/workflow.json"))
@@ -17,7 +19,7 @@ struct Opts {
     path: PathBuf,
 }
 
-fn run(opts: Opts) -> Result<(), Box<dyn Error>> {
+fn run(opts: Opts) -> Result<(), Box<dyn StdError>> {
     let Opts { path } = opts;
     println!("validating {}", path.display());
     let result = validate(
@@ -26,8 +28,8 @@ fn run(opts: Opts) -> Result<(), Box<dyn Error>> {
         None,
         true,
     );
-    for err in result.get_errors() {
-        println!("{}", err);
+    if !result.get_errors().is_empty() {
+        Err(Error::Validation(result))?
     }
     Ok(())
 }
@@ -74,7 +76,7 @@ mod tests {
         let result = run(Opts {
             path: "tests/data/workflows/invalid_01.yml".into(),
         });
-        assert!(result.is_ok())
+        assert!(result.is_err())
     }
 
     #[test]
