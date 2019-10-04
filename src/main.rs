@@ -16,25 +16,26 @@ lazy_static! {
 
 #[derive(StructOpt)]
 struct Opts {
-    path: PathBuf,
+    path: Vec<PathBuf>,
 }
 
 fn run(opts: Opts) -> Result<(), Box<dyn StdError>> {
     let Opts { path } = opts;
-    println!("validating {}", path.display());
-    let schema: &Value = if path.file_name().iter().any(|name| "action.yml" == *name) {
-        &ACTION_SCHEMA
-    } else {
-        &WORKFLOW_SCHEMA
-    };
-    let contents = fs::read_to_string(&path)?;
-    let positions = lincolns::from_str(&contents)?;
-    let result = validate(&serde_yaml::from_str(&contents)?, schema, None, true);
-    if !result.get_errors().is_empty() {
-        Err(Error::Validation(path, positions, result).into())
-    } else {
-        Ok(())
+    for p in path {
+        println!("validating {}", p.display());
+        let schema: &Value = if p.file_name().iter().any(|name| "action.yml" == *name) {
+            &ACTION_SCHEMA
+        } else {
+            &WORKFLOW_SCHEMA
+        };
+        let contents = fs::read_to_string(&p)?;
+        let positions = lincolns::from_str(&contents)?;
+        let result = validate(&serde_yaml::from_str(&contents)?, schema, None, false);
+        if !result.get_errors().is_empty() {
+            return Err(Error::Validation(p, positions, result).into());
+        }
     }
+    Ok(())
 }
 
 fn main() {
