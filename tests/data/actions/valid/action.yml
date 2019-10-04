@@ -1,2 +1,5 @@
 name: "foo action"
 description: "things and stuff"
+runs:
+  using: "node12"
+  main: "lib/main.js"
