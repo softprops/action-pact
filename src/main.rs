@@ -27,11 +27,11 @@ fn run(opts: Opts) -> Result<(), Box<dyn StdError>> {
     } else {
         &WORKFLOW_SCHEMA
     };
-    let contents = fs::read_to_string(path)?;
+    let contents = fs::read_to_string(&path)?;
     let positions = lincolns::from_str(&contents)?;
     let result = validate(&serde_yaml::from_str(&contents)?, schema, None, true);
     if !result.get_errors().is_empty() {
-        Err(Error::Validation(positions, result).into())
+        Err(Error::Validation(path, positions, result).into())
     } else {
         Ok(())
     }
@@ -71,7 +71,6 @@ mod tests {
         let result = run(Opts {
             path: "tests/data/workflows/valid_01.yml".into(),
         });
-
         assert!(result.is_ok())
     }
 
